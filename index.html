@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的博客 - 與朋友分享的文章</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --accent-color: #f59e0b;
+            --bg-color: #ffffff;
+            --card-bg: #f8fafc;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --text-light: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "📝";
+            font-size: 1.8rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        main {
+            padding: 2rem 0;
+            min-height: 80vh;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, var(--primary-color)10, var(--accent-color)10);
+            border-radius: 16px;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .blog-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .blog-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .blog-meta {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .blog-excerpt {
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 500;
+            text-decoration: none;
+            transition: gap 0.3s ease;
+        }
+
+        .read-more:hover {
+            gap: 1rem;
+        }
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .category-tag {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-tag:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            max-width: 800px;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 16px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav {
+                gap: 1rem;
+            }
+            
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">我的博客</a>
+                <nav>
+                    <a href="#home">首頁</a>
+                    <a href="#about">關於我</a>
+                    <a href="#contact">聯繫</a>
+                    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h1>歡迎來到我的博客</h1>
+                <p>在這裡我分享關於技術、生活和思考的文章，希望能與朋友們交流想法，共同成長。</p>
+            </section>
+
+            <div class="categories">
+                <a href="#" class="category-tag" onclick="filterPosts('all')">全部文章</a>
+                <a href="#" class="category-tag" onclick="filterPosts('tech')">技術分享</a>
+                <a href="#" class="category-tag" onclick="filterPosts('life')">生活感悟</a>
+                <a href="#" class="category-tag" onclick="filterPosts('travel')">旅行見聞</a>
+            </div>
+
+            <div class="blog-grid" id="blog-grid">
+                <!-- 文章卡片將通過 JavaScript 動態生成 -->
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 我的博客. 用心分享，用愛交流。</p>
+                <div class="social-links">
+                    <a href="https://github.com/yourusername" target="_blank">📱</a>
+                    <a href="mailto:your.email@example.com">✉️</a>
+                    <a href="#" onclick="showAbout()">ℹ️</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 模態窗口 -->
+    <div class="modal" id="article-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">文章標題</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modal-body">
+                <!-- 文章內容將在這裡顯示 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 博客文章數據
+        const blogPosts = [
+            {
+                id: 1,
+                title: "開始我的GitHub博客之旅",
+                excerpt: "分享我建立這個博客的想法和過程，以及為什麼選擇在GitHub Pages上發佈內容。希望能與更多朋友交流技術和生活心得。",
+                category: "life",
+                date: "2025-07-21",
+                author: "我",
+                content: `
+                <h3>為什麼要建立博客？</h3>
+                <p>在這個快節奏的數位時代，我覺得需要一個地方來記錄自己的想法、學習心得和生活感悟。博客就像是一個數位花園，我可以在這裡培育自己的想法，與朋友們分享我的成長軌跡。</p>
+                
+                <h3>選擇GitHub Pages的原因</h3>
+                <p>GitHub Pages提供了免費、穩定的託管服務，對於程式開發者來說特別友善。我可以用版本控制來管理我的文章，也可以輕鬆地自訂網頁設計。</p>
+                
+                <h3>未來的計畫</h3>
+                <p>我計畫定期更新文章，主要會分享：</p>
+                <ul>
+                    <li>技術學習心得和教學</li>
+                    <li>生活中的思考和感悟</li>
+                    <li>旅行和攝影作品</li>
+                    <li>書籍和電影的心得分享</li>
+                </ul>
+                `
+            },
+            {
+                id: 2,
+                title: "前端開發的現代工具鏈",
+                excerpt: "探討現代前端開發中常用的工具和框架，包括打包工具、CSS框架、以及開發流程的最佳實踐。",
+                category: "tech",
+                date: "2025-07-20",
+                author: "我",
+                content: `
+                <h3>現代前端工具的演進</h3>
+                <p>前端開發在過去十年中發生了翻天覆地的變化。從簡單的HTML、CSS、JavaScript組合，發展到現在複雜而強大的工具鏈生態系統。</p>
+                
+                <h3>必備的開發工具</h3>
+                <p>以下是我推薦的現代前端開發工具：</p>
+                <ul>
+                    <li><strong>Vite</strong> - 快速的構建工具</li>
+                    <li><strong>TypeScript</strong> - 帶來更好的開發體驗</li>
+                    <li><strong>Tailwind CSS</strong> - 實用優先的CSS框架</li>
+                    <li><strong>ESLint & Prettier</strong> - 代碼品質管理</li>
+                </ul>
+                
+                <h3>我的開發流程</h3>
+                <p>我通常會先用設計工具畫出草圖，然後使用現代框架快速實現原型，最後通過持續整合部署到生產環境。</p>
+                `
+            },
+            {
+                id: 3,
+                title: "台灣東部海岸線騎行記",
+                excerpt: "記錄我沿著台灣東部海岸線騎自行車旅行的經歷，從太魯閣到台東的美麗風景和難忘回憶。",
+                category: "travel",
+                date: "2025-07-18",
+                author: "我",
+                content: `
+                <h3>旅程的開始</h3>
+                <p>東部海岸線一直是我夢想的騎行路線。從花蓮出發，沿著台11線一路南下到台東，這條路線不僅景色優美，也充滿了挑戰。</p>
+                
+                <h3>難忘的風景</h3>
+                <p>騎行過程中最讓我印象深刻的幾個地點：</p>
+                <ul>
+                    <li><strong>七星潭</strong> - 清晨的海岸線特別寧靜</li>
+                    <li><strong>石梯坪</strong> - 壯觀的海蝕地形</li>
+                    <li><strong>北回歸線標誌</strong> - 地理意義特殊的拍照點</li>
+                    <li><strong>都蘭山</strong> - 遠眺太平洋的絕佳視角</li>
+                </ul>
+                
+                <h3>騎行的感悟</h3>
+                <p>這次旅程讓我體會到慢旅行的魅力。用雙腳的力量前進，能更深刻地感受土地的美麗和自己內心的聲音。</p>
+                `
+            },
+            {
+                id: 4,
+                title: "閱讀《原則》的心得分享",
+                excerpt: "Ray Dalio的《原則》這本書給了我很多關於工作和生活的啟發，分享一些我覺得特別有價值的觀點。",
+                category: "life",
+                date: "2025-07-15",
+                author: "我",
+                content: `
+                <h3>什麼是原則？</h3>
+                <p>Ray Dalio在書中提到，原則是在類似情況下一再發生的事物的本質規律。有了原則，我們就能在面對現實時做出更好的決策。</p>
+                
+                <h3>印象深刻的觀點</h3>
+                <p>書中有幾個觀點特別觸動我：</p>
+                <ul>
+                    <li><strong>擁抱現實，應對現實</strong> - 不逃避問題，直面挑戰</li>
+                    <li><strong>極度透明</strong> - 誠實面對自己和他人</li>
+                    <li><strong>不斷學習和改進</strong> - 把錯誤當作學習機會</li>
+                </ul>
+                
+                <h3>實際應用</h3>
+                <p>我開始嘗試建立自己的原則系統，特別是在做決策時會問自己：這個決定符合我的原則嗎？長遠來看會帶來什麼結果？</p>
+                `
+            },
+            {
+                id: 5,
+                title: "如何優化網頁效能",
+                excerpt: "分享一些實用的網頁效能優化技巧，包括圖片優化、代碼分割、快取策略等，讓網站載入更快速。",
+                category: "tech",
+                date: "2025-07-12",
+                author: "我",
+                content: `
+                <h3>為什麼效能很重要？</h3>
+                <p>網頁效能直接影響使用者體驗和搜索引擎排名。根據研究，載入時間每增加1秒，轉換率就會下降7%。</p>
+                
+                <h3>主要優化策略</h3>
+                <p>以下是一些我常用的優化技巧：</p>
+                <ul>
+                    <li><strong>圖片優化</strong> - 使用現代格式如WebP，實施懶載入</li>
+                    <li><strong>代碼分割</strong> - 按需載入JavaScript</li>
+                    <li><strong>CSS優化</strong> - 移除未使用的CSS，使用CSS壓縮</li>
+                    <li><strong>CDN使用</strong> - 加速靜態資源載入</li>
+                </ul>
+                
+                <h3>測量和監控</h3>
+                <p>使用Lighthouse、WebPageTest等工具定期檢測效能指標，持續改進網站表現。</p>
+                `
+            },
+            {
+                id: 6,
+                title: "咖啡館工作的美好時光",
+                excerpt: "分享我在不同咖啡館工作的經驗，以及如何在咖啡香中找到靈感和專注力。",
+                category: "life",
+                date: "2025-07-10",
+                author: "我",
+                content: `
+                <h3>為什麼選擇咖啡館？</h3>
+                <p>在家工作有時會感到孤獨和缺乏動力，而咖啡館提供了一個完美的工作環境：適度的背景噪音、咖啡的香氣，還有其他專注工作的人們營造的氛圍。</p>
+                
+                <h3>我的咖啡館清單</h3>
+                <p>這裡是我最喜歡的幾家咖啡館：</p>
+                <ul>
+                    <li><strong>城市角落</strong> - 安靜、WiFi穩定、座位舒適</li>
+                    <li><strong>文青書店咖啡</strong> - 可以看書，氛圍很棒</li>
+                    <li><strong>工業風咖啡廳</strong> - 空間寬敞，適合長時間工作</li>
+                </ul>
+                
+                <h3>咖啡館工作的小技巧</h3>
+                <p>選擇人流較少的時段、帶上好的耳機、點一杯好咖啡，就能開始一天高效的工作了。</p>
+                `
+            },
+            {
+                id: 7,
+                title: "## 香塵辯",
+                excerpt: "詩句心得。",
+                category: "life",
+                date: "2025-07-10",
+                author: "我",
+                content: `
+                <h3>## 香塵辯</h3>
+                <p>詩句心得。</p>
+                
+                <h3>我的咖啡館清單</h3>
+                <p>這裡是我最喜歡的幾家咖啡館：</p>
+                <ul>
+                    <li><strong>城市角落</strong> - 安靜、WiFi穩定、座位舒適</li>
+                    <li><strong>文青書店咖啡</strong> - 可以看書，氛圍很棒</li>
+                    <li><strong>工業風咖啡廳</strong> - 空間寬敞，適合長時間工作</li>
+                </ul>
+                
+                <h3>咖啡館工作的小技巧</h3>
+                <p>## 香塵辯
+
+                    「零落成泥碾作塵，只有香如故。」這兩句詩讀來總令人齒頰生香。但若較真起來，泥與塵何嘗有香？新開的花自然是香的，但零落成泥之後，那香氣恐怕早已隨風而散，不復存焉。
+
+                    文人筆下的香氣，倒也不必盡信。譬如「暗香浮動月黃昏」，何嘗真有人聞到？不過是詩人心中自生幻象，又引得讀者隨之起舞罷了。此等筆墨遊戲，原也不必深究。
+
+                    記得北平舊居院中有兩株臘梅，隆冬時節開得極盛。那香氣是極清冷的，若有若無，偏又固執得很，能從窗縫門隙間鑽進來。花謝後，殘瓣落在泥土裏，不過三五日便化作春泥，哪裏還有什麼香氣？倒是枝頭嫩葉初綻時，另有一種生澀的草木氣息，與先前的冷香迥異了。
+
+                    然而詩句裏的香氣，竟比真花還要長久。陸放翁這兩句，傳誦至今已八百餘年。當日他詠的是何種梅花，早已不可考，但那「香如故」三字，卻引得後世多少文人墨客，在枯枝敗葉間嗅探著那虛無縹緲的幽香。
+
+                    這倒讓我想起西洋人的「瓶中船」。巴掌大的玻璃瓶裏，裝著精雕細琢的三桅帆船，帆檣索具無不畢備。明眼人一看便知，這船斷乎不是從瓶口裝進去的——瓶頸太細，船身太大。但人們寧願相信這船是魔法變進去的，也不願深究工匠如何費盡心機將零件逐一放入再行組裝。文學裏的香氣，大約也是這般道理。
+
+                    說穿了，我們不過是甘願被幾個好字眼哄騙。明知泥塵無香，卻偏要在字裏行間細細嗅探。好比孩童明知匣中已無糖果，仍要反覆開合，貪戀那殘存的甜香氣息。這份癡態，倒有幾分可愛。
+
+                    某年冬夜與友圍爐，談及此詩。座中有位實心眼的老先生偏要追問：「若真無香，何必說香如故？」我笑答：「您老吃過東來順的涮羊肉不曾？」他愕然點頭。「那銅鍋裏翻滾的湯水，可有羊肉味？」「清湯寡水，哪來的肉味！」「著啊！」我拊掌道，「可大夥兒偏要從這白水裏撈出羊肉的鮮味來。詩裏的香，鍋裏的鮮，原是一般的道理——我們吃的是想像的滋味。」
+
+                    文學的魅力，大約就在這真真假假之間。真花易朽，而文字鑄造的虛花，倒能在人心中常開不敗。泥塵本無香氣，但千年來多少鼻子在書頁間嗅個不停，竟真能聞見若有若無的暗香。這香氣不從土中來，不從風中來，單從那方塊字裏滲出來，在讀者心頭縈繞不去。
+
+                    如此說來，倒也不必笑文人說謊。人生在世，有些美麗的謊言，原值得我們鄭重其事地聞了又聞。
+                </p>
+                `
+            }
+        ];
+
+        // 渲染博客文章
+        function renderBlogPosts(posts = blogPosts) {
+            const blogGrid = document.getElementById('blog-grid');
+            blogGrid.innerHTML = posts.map(post => `
+                <article class="blog-card" onclick="showArticle(${post.id})">
+                    <h3>${post.title}</h3>
+                    <div class="blog-meta">
+                        <span>📅 ${post.date}</span>
+                        <span>👤 ${post.author}</span>
+                        <span>🏷️ ${getCategoryName(post.category)}</span>
+                    </div>
+                    <p class="blog-excerpt">${post.excerpt}</p>
+                    <a href="#" class="read-more">閱讀更多 →</a>
+                </article>
+            `).join('');
+        }
+
+        // 獲取分類中文名稱
+        function getCategoryName(category) {
+            const categoryNames = {
+                'tech': '技術分享',
+                'life': '生活感悟',
+                'travel': '旅行見聞'
+            };
+            return categoryNames[category] || category;
+        }
+
+        // 篩選文章
+        function filterPosts(category) {
+            if (category === 'all') {
+                renderBlogPosts(blogPosts);
+            } else {
+                const filteredPosts = blogPosts.filter(post => post.category === category);
+                renderBlogPosts(filteredPosts);
+            }
+        }
+
+        // 顯示文章詳情
+        function showArticle(id) {
+            const post = blogPosts.find(p => p.id === id);
+            if (post) {
+                document.getElementById('modal-title').textContent = post.title;
+                document.getElementById('modal-body').innerHTML = `
+                    <div class="blog-meta" style="margin-bottom: 2rem;">
+                        <span>📅 ${post.date}</span>
+                        <span>👤 ${post.author}</span>
+                        <span>🏷️ ${getCategoryName(post.category)}</span>
+                    </div>
+                    ${post.content}
+                `;
+                document.getElementById('article-modal').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // 關閉模態窗口
+        function closeModal() {
+            document.getElementById('article-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // 顯示關於資訊
+        function showAbout() {
+            document.getElementById('modal-title').textContent = '關於我';
+            document.getElementById('modal-body').innerHTML = `
+                <h3>歡迎來到我的數位空間！</h3>
+                <p>我是一名熱愛技術和生活的開發者，喜歡通過文字記錄和分享自己的想法與經歷。</p>
+                
+                <h4>我的興趣</h4>
+                <ul>
+                    <li>💻 前端開發與UI/UX設計</li>
+                    <li>📚 閱讀和學習新知識</li>
+                    <li>🚴‍♂️ 騎車旅行和戶外活動</li>
+                    <li>☕ 在咖啡館工作和思考</li>
+                    <li>📸 攝影和記錄美好時刻</li>
+                </ul>
+                
+                <h4>聯繫方式</h4>
+                <p>如果你想和我交流想法或合作，歡迎通過以下方式聯繫：</p>
+                <ul>
+                    <li>📧 Email: your.email@example.com</li>
+                    <li>🐙 GitHub: github.com/yourusername</li>
+                </ul>
+                
+                <p>感謝你花時間閱讀我的文章，希望能與你成為朋友！</p>
+            `;
+            document.getElementById('article-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 主題切換
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // 點擊模態窗口外部關閉
+        document.getElementById('article-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 鍵盤ESC關閉模態窗口
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // 初始化頁面
+        document.addEventListener('DOMContentLoaded', function() {
+            renderBlogPosts();
+            
+            // 載入保存的主題設定
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.querySelector('.theme-toggle').textContent = '☀️';
+            }
+            
+            // 添加平滑滾動效果
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
